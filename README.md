@@ -1,52 +1,210 @@
-[BEGIN index.html]
 <!doctype html>
-<html>
+<html lang="ru">
 <head>
-<meta charset=“utf-8”/>
-<meta name=“viewport” content=“width=device-width,initial-scale=1”/>
-<title>AI Tarot Menu</title>
-<style>
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#111;color:#eee}
-.wrap{padding:16px;max-width:640px;margin:0 auto}
-h3{margin:0 0 12px}
-.btn{display:block;width:100%;padding:12px 16px;margin:8px 0;border:0;border-radius:10px;font-size:16px;background:#2a7; color:#fff}
-.btn.alt{background:#2979ff}
-.btn.gray{background:#444}
-.row{display:flex;gap:8px}
-.row>.btn{flex:1}
-.card{background:#1d1d1d;border-radius:12px;padding:12px;margin:12px 0}
-.muted{color:#aaa;font-size:13px;margin-top:8px}
-</style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Меню</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root{
+      --bg: var(--tg-theme-bg-color, #0e0f13);
+      --text: var(--tg-theme-text-color, #e9ecf1);
+      --muted: var(--tg-theme-hint-color, #9aa3ad);
+      --card: var(--tg-theme-secondary-bg-color, #161821);
+      --btn: var(--tg-theme-button-color, #2f7bea);
+      --btn-text: var(--tg-theme-button-text-color, #ffffff);
+      --accent: #7b61ff;
+      --ok: #2fbf71;
+      --warn: #ffb020;
+      --border: rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .wrap{max-width:880px;margin:0 auto;padding:16px 18px 28px;position:relative;isolation:isolate}
+    /* фон-градиенты */
+    .wrap::before,.wrap::after{
+      content:"";position:absolute;inset:auto;z-index:-1;filter:blur(60px);opacity:.55;pointer-events:none
+    }
+    .wrap::before{width:380px;height:380px;left:-120px;top:-80px;background:radial-gradient(40% 40% at 50% 50%, #275efe 0%, transparent 70%)}
+    .wrap::after{width:420px;height:420px;right:-120px;bottom:-100px;background:radial-gradient(40% 40% at 50% 50%, #8f58ff 0%, transparent 70%)}
+    header{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+    .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#2f7bea 0%,#7b61ff 100%);box-shadow:var(--shadow)}
+    .logo svg{fill:#fff}
+    h1{font-size:18px;margin:0}
+    .sub{color:var(--muted);font-size:13px;margin-top:2px}
+    .grid{display:grid;gap:14px}
+    @media (min-width:760px){ .grid{grid-template-columns:1.1fr 1fr} }
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+    .title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .title h3{margin:0;font-size:16px}
+    .muted{color:var(--muted);font-size:13px}
+    .balance{display:flex;align-items:baseline;gap:8px;margin:6px 0 12px}
+    .balance .num{font-size:28px;font-weight:700}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);font-size:13px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{appearance:none;border:0;border-radius:12px;padding:12px 14px;background:var(--btn);color:var(--btn-text);font-weight:600;cursor:pointer;box-shadow:var(--shadow);transition:transform .06s ease, filter .2s ease}
+    .btn:active{transform:translateY(1px)}
+    .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border);box-shadow:none}
+    .btn.ok{background:var(--ok)}
+    .btn.warn{background:var(--warn);color:#222}
+    /* Тарифы */
+    .plans{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-top:6px}
+    .plan{background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:transform .08s ease, box-shadow .2s ease}
+    .plan:hover{transform:translateY(-1px)}
+    .plan .q{font-size:20px;font-weight:700}
+    .plan .p{font-size:14px;color:var(--muted)}
+    .plan .buy{margin-top:auto}
+    /* Действия */
+    .actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media (min-width:760px){ .actions{grid-template-columns:repeat(3,1fr)} }
+    .tile{display:flex;gap:10px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.03)}
+    .tile svg{width:22px;height:22px}
+    footer{margin-top:16px;color:var(--muted);font-size:12px}
+  </style>
 </head>
 <body>
-<script src=“https://telegram.org/js/telegram-web-app.js”></script>
-<div class=“wrap”>
-<h3>Меню</h3>
-<div class=“card” id=“usr”>Добро пожаловать! Ваш баланс запросите кнопкой ниже.</div>
-<button class=“btn” id=“balance”>Показать баланс</button>
-<button class=“btn alt” id=“buy100”>Купить 100 сообщений — 250 ₽</button>
-<div class=“row”>
-<button class=“btn” id=“advice”>Совет дня</button>
-<button class=“btn gray” id=“close”>Закрыть</button>
-</div>
-<div class=“muted”>Оплата происходит через инвойсы Telegram. После покупки баланс пополнится автоматически.</div>
-</div>
-<script>
-const tg = window.Telegram.WebApp;
-tg.expand(); tg.ready();
-const user = tg.initDataUnsafe?.user;
-if (user) document.getElementById(‘usr’).innerText = @${user.username || ''} (id ${user.id});
+  <div class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.5 6.5L22 10l-6 4.5L17 22l-5-3.2L7 22l1-7.5L2 10l6.5-1.5L12 2z"/></svg>
+      </div>
+      <div>
+        <h1>Меню</h1>
+        <div class="sub" id="userSub">Добро пожаловать!</div>
+      </div>
+    </header>
 
-CoffeeScript
-function send(action, extra={}) {
-  tg.sendData(JSON.stringify({action, ...extra}));
-}
-document.getElementById('balance').onclick = () => send('balance');
-document.getElementById('buy100').onclick = () => send('buy', {qty: 100});
-document.getElementById('advice').onclick = () => send('advice');
-document.getElementById('close').onclick = () => tg.close();
-Копировать
-</script>
+    <div class="grid">
+      <!-- Баланс и быстрые действия -->
+      <section class="card">
+        <div class="title">
+          <h3>Ваш баланс</h3>
+          <span class="chip" id="timeChip">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 1.75a10.25 10.25 0 1 0 0 20.5 10.25 10.25 0 0 0 0-20.5Zm.75 10.1V6a.75.75 0 1 0-1.5 0v6c0 .2.08.39.22.53l3.5 3.5a.75.75 0 1 0 1.06-1.06l-3.28-3.28Z"/></svg>
+            <span id="now">—</span>
+          </span>
+        </div>
+        <div class="balance">
+          <div class="num" id="balanceNum">—</div>
+          <div class="muted">сообщений</div>
+        </div>
+        <div class="row">
+          <button class="btn ghost" id="btnBalance">Обновить баланс</button>
+          <button class="btn" id="btnOpenBuy">Пополнить</button>
+        </div>
+      </section>
+
+      <!-- Расклады и ИИ -->
+      <section class="card">
+        <div class="title"><h3>Быстрые действия</h3></div>
+        <div class="actions">
+          <path fill="currentColor" d="M12 2a6 6 0 0 0-6 6c0 2.22 1.2 3.93 2.52 5.14.43.39.65.94.63 1.52v.34a1 1 0 0 0 1 1H14.9a1 1 0 0 0 1-1v-.34c-.02-.58.2-1.13.63-1.52C16.8 11.93 18 10.22 18 8a6 6 0 0 0-6-6Zm-1 18a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2h-2Z"/></svg>
+            Совет дня
+          </button>
+          <button class="tile btnAction" data-act="spread" data-type="three">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 6h6v12H4V6Zm10 0h6v12h-6V6Z"/></svg>
+            Расклад: 3 карты
+          </button>
+          <button class="tile btnAction" data-act="spread" data-type="week">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v3H3V4Zm0 5h18v11H3V9Zm5 3v2h2v-2H8Zm0 3v2h2v-2H8Z"/></svg>
+            Расклад: Неделя
+          </button>
+          <button class="tile btnAction" data-act="yesno">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm1 15h-2v-2h2v2Zm1.1-6.9c-.5.4-.8.7-.9 1.4v.5h-2v-.7c.1-1.1.7-1.7 1.3-2.1.6-.4 1.2-.8 1.2-1.5 0-.8-.6-1.3-1.5-1.3-.8 0-1.4.4-1.9 1l-1.4-1.2C7.7 4.3 9 3.5 10.9 3.5c2.1 0 3.7 1.2 3.7 3.1 0 1.3-.7 2-1.5 2.5Z"/></svg>
+            Да / Нет
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Тарифы -->
+    <section class="card" style="margin-top:14px">
+      <div class="title"><h3>Купить сообщения</h3><span class="muted">1 ответ ИИ или расклад = 1 сообщение</span></div>
+      <div class="plans" id="plans">
+        <!-- Карточки тарифов создадим из JS, чтобы легко менять цены -->
+      </div>
+    </section>
+
+    <footer>
+      Важно: это инструмент саморефлексии и развлечения, не является медицинским, юридическим или финансовым советом.
+    </footer>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready(); tg.expand();
+    try { tg.setHeaderColor(tg.colorScheme === 'dark' ? '#0e0f13' : '#ffffff'); } catch(e){}
+
+    // Пользователь и время
+    const u = tg.initDataUnsafe?.user;
+    if (u) {
+      document.getElementById('userSub').textContent = `@${u.username || 'user'}  •  id ${u.id}`;
+    }
+    const fmt = new Intl.DateTimeFormat('ru-RU', {hour:'2-digit',minute:'2-digit'});
+    document.getElementById('now').textContent = fmt.format(new Date());
+
+    // Планы (кол-во сообщений → цена)
+    const plans = [
+      {qty:100, price:'250 ₽'},
+      {qty:200, price:'400 ₽'},
+      {qty:300, price:'800 ₽'},
+      {qty:500, price:'1500 ₽'},
+      {qty:1000, price:'2500 ₽'}
+    ];
+    const plansBox = document.getElementById('plans');
+    plans.forEach(p => {
+      const el = document.createElement('div');
+      el.className = 'plan';
+      el.innerHTML = `
+        <div class="q">${p.qty} сообщений</div>
+        <div class="p">Пакет сообщений для ответов ИИ и раскладов</div>
+        <button class="btn buy" data-qty="${p.qty}">Купить — ${p.price}</button>
+      `;
+      plansBox.appendChild(el);
+    });
+
+    // Кнопки покупки
+    plansBox.addEventListener('click', (e) => {
+      const btn = e.target.closest('.buy');
+      if (!btn) return;
+      const qty = parseInt(btn.dataset.qty, 10);
+      tg.sendData(JSON.stringify({action:'buy', qty}));
+    });
+
+    // Баланс
+    document.getElementById('btnBalance').onclick = () => {
+      tg.sendData(JSON.stringify({action:'balance'}));
+    };
+    document.getElementById('btnOpenBuy').onclick = () => {
+      window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+    };
+
+    // Быстрые действия
+    document.querySelectorAll('.btnAction').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const act = b.dataset.act;
+        if (act === 'yesno') {
+          const q = prompt('Введите ваш вопрос (да/нет):');
+          if (!q) return;
+          tg.sendData(JSON.stringify({action:'yesno', question:q}));
+          return;
+        }
+        if (act === 'spread') {
+          tg.sendData(JSON.stringify({action:'spread', type: b.dataset.type}));
+          return;
+        }
+        // advice
+        tg.sendData(JSON.stringify({action:'advice'}));
+      });
+    });
+
+    // Реакция на смену темы
+    tg.onEvent('themeChanged', ()=>{
+      try { tg.setHeaderColor(tg.colorScheme === 'dark' ? '#0e0f13' : '#ffffff'); } catch(e){}
+    });
+  </script>
 </body>
 </html>
-[END index.html]
